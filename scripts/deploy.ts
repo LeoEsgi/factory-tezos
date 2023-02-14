@@ -1,9 +1,7 @@
-import { buf2hex } from "@taquito/utils";
 import { InMemorySigner } from "@taquito/signer";
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import code_contract_1 from "../src/compiled/contract_1.json";
+import factory from "../src/compiled/contract_1.json";
 import dotenv from "dotenv";
-import metadata from "./metadata/main.json";
 import path from "path";
 // Read environment variables from .env file
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
@@ -30,11 +28,11 @@ const Tezos = new TezosToolkit(process.env.NODE_URL || "");
             has_paid: new MichelsonMap(),
         };
         const op = await Tezos.contract.originate({
-            code: code_contract_1,
+            code: factory,
             storage: storage,
         });
         await op.confirmation();
-        console.log(`[OK] Contract 1: ${op.contractAddress}`);
+        console.log(`[OK] Contract Factory: ${op.contractAddress}`);
         // check contract storage with CLI
         console.log(
             `tezos-client --endpoint http://localhost:20000 get contract storage for ${op.contractAddress}`

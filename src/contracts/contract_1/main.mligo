@@ -24,7 +24,7 @@ let assert_admin(_assert_admin_param, store: Parameter.assert_admin_param * Stor
 
 let assert_blacklist(_assert_blacklist_param, store : Parameter.assert_blacklist_param * Storage.t) : unit = 
 	let is_blacklisted = fun (user : Storage.user) -> if(user = Tezos.get_sender()) then failwith Errors.blacklisted else () in
-	let _ = List.iter is_blacklisted store.creator_blacklist in
+	let _ = List.iter is_blacklisted store.blacklist in
 	()
 
 let assert_access(_assert_access_param, store: Parameter.assert_access_param * Storage.t) : unit =
@@ -96,7 +96,9 @@ let create_collection(_create_collection_param, store : Parameter.create_collect
     in
     let originate : operation * address = create_my_contract() in
 	let collections : Storage.collection_list = (sender, originate.1) :: store.collections in
-    { store with collections }
+    { store with collections } 
+
+
 
 // Main
 let main (action, store : action * Storage.t) : return =
@@ -113,9 +115,10 @@ let main (action, store : action * Storage.t) : return =
 			let _ : unit = assert_access((), store) in	
 			let _ : unit = assert_blacklist((), store) in	
 			create_collection((), store)
-		| Reset -> { store with creator_blacklist = []; admin_list = Map.empty; has_paid = Map.empty; collections = [] }
+		| Reset -> { store with blacklist = []; admin_list = Map.empty; has_paid = Map.empty; collections = [] }
 		in
 	(([] : operation list), new_store)
+
 
 
 // Views
